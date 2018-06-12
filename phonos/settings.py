@@ -1,4 +1,4 @@
 DEFAULTS = {
-    "SQLALCHEMY_DATABASE_URI": "postgresql://localhost/phonos",
+    "SQLALCHEMY_DATABASE_URI": "sqlite://:memory:",
     "SQLALCHEMY_TRACK_MODIFICATIONS": False
 }

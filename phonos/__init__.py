@@ -9,6 +9,4 @@ app = Flask(__name__)
 app.config.from_mapping(settings.DEFAULTS)
 app.config.from_pyfile(config_path)
 
-@app.route('/')
-def hello():
-    return "Hi there!"
+from phonos.ui_routes import *
