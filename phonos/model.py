@@ -4,14 +4,17 @@ from phonos import app
 
 import enum
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://phonos:phonos@localhost"
 db = SQLAlchemy(app)
+
+def initialize():
+    db.drop_all()
+    db.create_all()
 
 class PhoneStatus(enum.Enum):
     active = "Active"
     inactive = "Inactive"
     available = "Available"
-    hold= "Hold"
+    hold = "Hold"
 
 class PhoneNumber(db.Model):
     __tablename__ = "phone_number"
