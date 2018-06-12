@@ -2,4 +2,5 @@ Flask
 Jinja2
 gunicorn
 Flask-sqlalchemy
-psycopg2
+psycopg2-binary
+requests
