@@ -39,13 +39,15 @@ class PhoneNumber(db.Model):
     country = db.relationship("Country")
     person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
     person = db.relationship("Person")
-    extra = db.Column(db.JSON)
+    extra = db.Column(db.JSON)  # Extra information will change based on type.
 
 
 class Person(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     firstname = db.Column(db.String(50), nullable=False)
     lastname = db.Column(db.String(50))
+
+db.Index('person_firstname_lastname_idx', Person.firstname, Person.lastname)
 
 
 class Country(db.Model):

@@ -4,3 +4,4 @@ gunicorn
 Flask-sqlalchemy
 psycopg2-binary
 requests
+phonenumbers
