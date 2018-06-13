@@ -26,12 +26,20 @@ class PhoneStatus(enum.Enum):
     available = "Available"
     hold = "Hold"
 
+
 class PhoneNumber(db.Model):
     __tablename__ = "phone_number"
     id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.String(20), nullable=False)
     type = db.Column(db.String(10), nullable=False)  # (Avaya, Cisco, mobile)
     status = db.Column(db.Enum(PhoneStatus))
+    street_address = db.Column(db.String(100))
+    postal_code = db.Column(db.String(15))
+    country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
+    country = db.relationship("Country")
+    person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
+    person = db.relationship("Person")
+    extra = db.Column(db.JSON)
 
 
 class Person(db.Model):
