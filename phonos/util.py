@@ -33,11 +33,19 @@ def import_avaya_numbers(file, country="US"):
         if not person:
             person = model.Person(firstname=firstname, lastname=lastname)
 
+        extra = {
+            "phone_type" : row["Type"],
+            "room" : row["Room"],
+            "floor" : row["Floor"],
+            "building" : row["Building"]
+        }
+
         number = model.PhoneNumber(
             number=row["Extension"],
             type="Avaya",
             country=country_lookup.by_code[country],
-            person = person
+            person = person,
+            extra = extra
         )
 
         model.db.session.add(number)
