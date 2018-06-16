@@ -1,0 +1,35 @@
+{% set current_page = "import" %}
+{% extends 'base.html' %}
+{% block body %}
+    <div>
+       <h2>Import Phone Numbers</h2>
+       <p>Uploaded files should be in CSV format.</p>
+       <form method="POST" enctype="multipart/form-data">
+           <div class="form-row">
+               <div class="form-group col-auto">
+                   <label for="csvfile">Import file</label>
+                   <input type="file" class="form-control-file border border-light" id="csvfile" name="csvfile">
+               </div>
+               <div class="form-group col-auto">
+                   <label for="filetype">Source</label>
+                   <select size="1" id="filetype" class="form-control" name="filetype">
+                       <option>Avaya</option>
+                       <option>Cisco</option>
+                       <option>mobile</option>
+                   </select>
+               </div>
+           </div>
+           <button type="submit" class="btn btn-primary">Submit</button>
+       <form>
+    </div>
+
+    {% if imported %}
+        <div class="alert alert-info alert-dismissible fade show mt-2" role="alert">
+            Succesfully imported {{ imported }} numbers!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+
+{% endblock %}
