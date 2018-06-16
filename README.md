@@ -13,7 +13,7 @@ You should then be able to access it at the following URL: `http://localhost:800
 Settings
 --------
 
-By default Phonos is set up to use an in-memory SQLite database.  In order to configure it to use a more permanent database, create a config file named `phonos.cfg` that looks something like this:
+Phonos requires a database that supports the JSON datatype.  To point Phonos to a database create a config file named `phonos.cfg` that looks something like this:
 
     SQLALCHEMY_DATABASE_URI = "postgresql://user:password@db_host/db_name"
 
