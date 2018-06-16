@@ -1,5 +1,55 @@
 {% set current_page = "index" %}
 {% extends 'base.html' %}
 {% block body %}
-    Hello World!
+    <h2>Phone Numbers</h2>
+    <table class="table table-striped table-hover table-bordered table-sm">
+        <thead class="table-primary">
+            <th>Name</th>
+            <th>Number</th>
+            <th>Type</th>
+            <th>Carrier</th>
+            <th>Address</th>
+            <th>Country</th>
+        </thead>
+        {% for phonenumber in pagination.items %}
+        <tr>
+            <td>{{ phonenumber.person.firstname }} {{phonenumber.person.lastname }}</td>
+            <td>{{ phonenumber.number }}</td>
+            <td>
+                {{ phonenumber.type }}
+                {% if phonenumber.type == 'mobile' %}
+                  ({{ phonenumber.extra.device_type }})
+                {% elif phonenumber.type == 'Avaya' %}
+                  ({{ phonenumber.extra.phone_type }})
+                {% endif %}
+            </td>
+            <td>
+                {% if phonenumber.type == 'mobile' %}
+                    {{ phonenumber.extra.carrier }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td>{{ phonenumber.street_address }}</td>
+            <td>{{ phonenumber.country.name }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <div class="container pt-3">
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}""><a class="page-link" href="/">First</a></li>
+                <li class="page-item {% if pagination.page == 1 %}disabled{% endif %}"><a class="page-link" href="/?page={{ pagination.prev_num }}">Prev</a></li>
+                {% for page in pagination.iter_pages() %}
+                    {% if not page %}
+                        <li class="page-item disabled"><a class="page-link">...</a></li>
+                    {% else %}
+                        <li class="page-item {% if page == pagination.page %}active{% endif %}"><a class="page-link" href="/?page={{ page }}">{{ page }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                <li class="page-item {% if pagination.page == pagination.pages %}disabled{% endif %}"><a class="page-link" href="/?page={{ pagination.next_num }}">Next</a></li>
+                <li class="page-item {% if pagination.page == pagination.pages %}disabled{% endif %}"><a class="page-link" href="/?page={{ pagination.pages }}">Last</a></li>
+            </ul>
+        </nav>
+    </div>
 {% endblock %}

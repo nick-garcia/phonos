@@ -38,7 +38,7 @@ class PhoneNumber(db.Model):
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
     country = db.relationship("Country")
     person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
-    person = db.relationship("Person")
+    person = db.relationship("Person", backref="number", lazy="joined")
     extra = db.Column(db.JSON)  # Extra information will change based on type.
 
 
