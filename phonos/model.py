@@ -34,11 +34,13 @@ class PhoneNumber(db.Model):
     type = db.Column(db.String(10), nullable=False)  # (Avaya, Cisco, mobile)
     status = db.Column(db.Enum(PhoneStatus))
     street_address = db.Column(db.String(100))
+    city = db.Column(db.String(50))
+    state = db.Column(db.String(50))
     postal_code = db.Column(db.String(15))
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
     country = db.relationship("Country")
     person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
-    person = db.relationship("Person", backref="number", lazy="joined")
+    person = db.relationship("Person", backref="numbers", lazy="joined")
     extra = db.Column(db.JSON)  # Extra information will change based on type.
 
 

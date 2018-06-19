@@ -12,6 +12,16 @@ def index_html():
 
     return render_template('index.html', pagination=pagination)
 
+@app.route('/people.html')
+def people():
+    return render_template('people.html')
+
+@app.route('/person/<person_id>')
+def person(person_id):
+    person = model.Person.query.filter(model.Person.id == person_id).first_or_404()
+
+    return render_template('person.html', person=person)
+
 @app.route('/import.html', methods=['GET', 'POST'])
 def import_html():
     imported = 0
