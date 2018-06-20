@@ -14,7 +14,13 @@ def index_html():
 
 @app.route('/people.html')
 def people():
-    return render_template('people.html')
+    page = request.args.get('page', 1)
+    qty = request.args.get('qty', 20)
+
+    query = model.Person.query.order_by(model.Person.firstname, model.Person.lastname)
+    pagination = query.paginate(page=int(page), per_page=int(qty))
+
+    return render_template('people.html', pagination=pagination)
 
 @app.route('/person/<person_id>')
 def person(person_id):
