@@ -1,0 +1,24 @@
+{% set current_page = "countries" %}
+{% extends 'base.html' %}
+{% block body %}
+    <h3>Edit Country</h3>
+    <form method="POST" action="/country/{{ country.id }}">
+        <div class="form-row pb-2">
+            <div class="col-5">
+                <input type="text" class="form-control" placeholder="Country Name" value="{{ country.name }}" name="name">
+            </div>
+            <div class="col-1">
+              <input type="text" class="form-control" placeholder="Code" value="{{ country.code }}" size="2" maxlength="2" name="code">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    {% if updated %}
+        <div class="alert alert-info alert-dismissible fade show mt-2" role="alert">
+            Country information updated!
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+{% endblock %}

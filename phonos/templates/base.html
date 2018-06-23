@@ -35,7 +35,10 @@
             <li class="nav-item">
               <a class="nav-link {% if current_page == 'people' %} active {% endif %}" href="/people.html"><i class="fas fa-users"></i> People</a>
             </li>
-          </ul>
+            <li class="nav-item">
+              <a class="nav-link {% if current_page == 'countries' %} active {% endif %}" href="/countries.html"><i class="fas fa-flag"></i> Countries</a>
+            </li>
+           </ul>
         </div>
         <div class="col pt-2">
           {% block body %}{% endblock %}
