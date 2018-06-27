@@ -24,22 +24,27 @@
         <div class="h1"><i class="fas fa-phone-square"></i> Phonos</div>
       </div>
       <div class="row">
-        <div class="col-2 pt-2">
-          <ul class="nav flex-column nav-pills">
-            <li class="nav-item">
-              <a class="nav-link {% if current_page == 'index' %} active {% endif %}" href="/"><i class="fas fa-home"></i> Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if current_page == 'import' %} active {% endif %}" href="/import.html"><i class="fas fa-cloud-upload-alt"></i> Import CSV</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if current_page == 'people' %} active {% endif %}" href="/people.html"><i class="fas fa-users"></i> People</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if current_page == 'countries' %} active {% endif %}" href="/countries.html"><i class="fas fa-flag"></i> Countries</a>
-            </li>
-           </ul>
-        </div>
+        {% if not no_menu %}
+           <div class="col-2 pt-2">
+             <ul class="nav flex-column nav-pills">
+               <li class="nav-item">
+                 <a class="nav-link {% if current_page == 'index' %} active {% endif %}" href="/"><i class="fas fa-home"></i> Home</a>
+               </li>
+               <li class="nav-item">
+                 <a class="nav-link {% if current_page == 'import' %} active {% endif %}" href="/import.html"><i class="fas fa-cloud-upload-alt"></i> Import CSV</a>
+               </li>
+               <li class="nav-item">
+                 <a class="nav-link {% if current_page == 'people' %} active {% endif %}" href="/people.html"><i class="fas fa-users"></i> People</a>
+               </li>
+               <li class="nav-item">
+                 <a class="nav-link {% if current_page == 'countries' %} active {% endif %}" href="/countries.html"><i class="fas fa-flag"></i> Countries</a>
+               </li>
+               <li class="nav-item border-top border-primary">
+                 <a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+               </li>
+              </ul>
+           </div>
+        {% endif %}
         <div class="col pt-2">
           {% block body %}{% endblock %}
         </div>

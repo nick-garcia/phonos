@@ -2,6 +2,7 @@ Flask
 Jinja2
 gunicorn
 Flask-sqlalchemy
+Flask-login
 psycopg2-binary
 requests
 phonenumbers

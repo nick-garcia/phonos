@@ -1,5 +1,7 @@
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-from phonos import app
+from phonos import app, login
+from werkzeug.security import generate_password_hash, check_password_hash
 
 import csv
 import enum
@@ -18,7 +20,19 @@ def initialize():
             row.code = country['Code']
             db.session.add(row)
 
+    admin = User()
+    admin.username = 'admin'
+    admin.password = generate_password_hash('admin')
+    admin.access_level = 7
+    db.session.add(admin)
+
     db.session.commit()
+
+
+@login.user_loader
+def load_user(id):
+    return User.query.get(int(id))
+
 
 class PhoneStatus(enum.Enum):
     active = "Active"
@@ -56,3 +70,14 @@ class Country(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     code = db.Column(db.String(2), nullable=False)
+
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    access_level = db.Column(db.Integer, nullable=False)
+
+    def valid_password(self, password):
+        return check_password_hash(self.password, password)
+
+db.Index('user_username_password_idx', User.username, User.password)

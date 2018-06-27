@@ -1,0 +1,33 @@
+{% set no_menu = True %}
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-4 border rounded border-dark">
+                <form method="POST" action="/login">
+                    <div class="form-group">
+                        <label for="phonos_username" class="font-weight-bold">Username</label>
+                        <input type="text" class="form-control" id="phonos_username" name="phonos_username">
+                    </div>
+                    <div class="form-group">
+                        <label for="phonos_password" class="font-weight-bold">Password</label>
+                        <input type="password" class="form-control" id="phonos_password" name="phonos_password">
+                    </div>
+                    <input type="hidden" name="next" value="{{ next_url }}"/>
+                    <div class="pt-2 mb-3 text-right">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </form>
+           </div>
+        </div>
+        <div class="row justify-content-center mt-2">
+            <div class="col-4 m-0 p-0">
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-warning border border-warning" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+             </div>
+        </div>
+     </div>
+{% endblock %}
