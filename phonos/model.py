@@ -23,7 +23,7 @@ def initialize():
     admin = User()
     admin.username = 'admin'
     admin.password = generate_password_hash('admin')
-    admin.access_level = 7
+    admin.is_admin = True
     db.session.add(admin)
 
     db.session.commit()
@@ -73,9 +73,9 @@ class Country(db.Model):
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(30), nullable=False)
+    username = db.Column(db.String(30), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
-    access_level = db.Column(db.Integer, nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False)
 
     def valid_password(self, password):
         return check_password_hash(self.password, password)
