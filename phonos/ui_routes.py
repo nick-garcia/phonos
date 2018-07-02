@@ -134,11 +134,17 @@ def user(user_id):
     user = model.User.query.filter(model.User.id == user_id).first_or_404()
     updated = False
 
-    if request.method == 'POST':
+    if request.method == 'DELETE':
+        model.db.session.delete(user)
+        model.db.session.commit()
+
+        flash(f'User {user.username} deleted!')
+        return 'Deleted!'
+
+    elif request.method == 'POST':
         new_password = request.form['new_password']
         is_admin = request.form.get('is_admin', False)
 
-        print(f"new_password is {new_password}")
         if new_password:
             user.password = generate_password_hash(new_password)
         user.is_admin = bool(is_admin)
@@ -146,7 +152,46 @@ def user(user_id):
         model.db.session.add(user)
         model.db.session.commit()
 
-        updated = True
+        flash(f'User {user.username} updated!')
 
-    return render_template('user.html', user=user, updated=updated)
-  
+    return render_template('user.html', user=user)
+
+@login_required
+@admin_required
+@app.route('/user/new', methods=['GET', 'POST'])
+def new_user():
+    if request.method == 'GET':
+        return render_template('user.html', new_user=True)
+    elif request.method == 'POST':
+        username = request.form.get('new_username')
+        password = request.form.get('new_password')
+        is_admin = request.form.get('is_admin', False)
+        has_error = False
+
+        if not username:
+            has_error = True
+            flash('A username is required to create a user.')
+
+        if not password:
+            has_error = True
+            flash('A password is required to create a user.')
+
+        # Check for duplicate username
+        user = model.User.query.filter_by(username=username).first()
+        if user:
+            has_error = True
+            flash(f'User {username} already exists!')
+
+        if has_error:
+            return render_template('user.html', new_user=True)
+
+        user = model.User()
+        user.username = username
+        user.password = generate_password_hash(password)
+        user.is_admin = bool(is_admin)
+
+        model.db.session.add(user)
+        model.db.session.commit()
+
+        flash(f'User {username} successfully created!')
+        return redirect(url_for('users'))
