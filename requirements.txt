@@ -6,3 +6,4 @@ Flask-login
 psycopg2-binary
 requests
 phonenumbers
+baker
