@@ -195,3 +195,16 @@ def new_user():
 
         flash(f'User {username} successfully created!')
         return redirect(url_for('users'))
+
+@login_required
+@admin_required
+@app.route('/groups.html')
+def groups():
+    page = request.args.get('page', 1)
+    qty = request.args.get('qty', 20)
+
+    query = model.Group.query.order_by(model.Group.name)
+    pagination = query.paginate(page=int(page), per_page=int(qty))
+
+    return render_template('groups.html', pagination=pagination)
+

@@ -13,6 +13,7 @@
         <thead class="table-primary">
             <th>User</th>
             <th>Is Admin?</th>
+            <th>Groups</th>
         </thead>
         <tbody>
             {% for user in pagination.items %}
@@ -25,6 +26,7 @@
                     <td>
                         {{ user.is_admin }}
                     </td>
+                    <td>{{ user.groups | map(attribute='name') | sort | join(', ') }}</td>
                 </tr>
             {% endfor %}
         </tbody>
