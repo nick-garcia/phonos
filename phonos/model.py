@@ -71,13 +71,24 @@ class Country(db.Model):
     name = db.Column(db.String(100), nullable=False)
     code = db.Column(db.String(2), nullable=False)
 
+group_membership_table = db.Table('group_membership',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('group_id', db.Integer, db.ForeignKey('group.id'), primary_key=True)
+)
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False)
+    groups = db.relationship('Group', secondary=group_membership_table, backref=db.backref('users'))
 
     def valid_password(self, password):
         return check_password_hash(self.password, password)
+
+class Group(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    description = db.Column(db.Text, nullable=False, default='')
 
 db.Index('user_username_password_idx', User.username, User.password)
