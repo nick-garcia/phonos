@@ -1,0 +1,50 @@
+{% set current_page = "groups" %}
+{% extends 'base.html' %}
+{% block body %}
+    <h3>{% if new_group %}Add Group{% else %}{{ group.name }}{% endif %}</h3>
+    {% if new_group %}
+        <form method="POST" action="/group/new" id='group_form'>
+    {% else %}
+        <form method="POST" action="/group/{{ group.id }}">
+    {% endif %}
+       <div class="form-group row">
+           <label class="col-2" for="group">Group Name</label>
+           <div class="col-5">
+               <input type="text" class="form-control" placeholder="Group Name" name="new_group_name" value="{% if group %}{{ group.name }}{% endif %}">
+           </div>
+       </div>
+        <div class="row pb-3">
+            <label class="col-2" for="description">Description</label>
+            <div class="col-5">
+                <textarea class='form-control' name='description' rows="3">{% if group %}{{ group.description }}{% endif %}</textarea>
+            </div>
+        </div>
+        <div class="row">
+            <label class="col-2" for="members">Group Members</label>
+            <div class="col-5">
+                <select multiple class='form-control select2' name='members'>
+                    {% for user in users %}
+                        <option value="{{ user.id }}"{% if user.id in members %} selected{% endif %}>{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row pt-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            {% if not new_group %}
+                <div class="col align-right">
+                    <button type="button" class="btn btn-danger" onClick="confirm_delete_group({{ group.id }})">Delete</button>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning border border-warning mt-2" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+{% endblock %}

@@ -132,7 +132,6 @@ def users():
 @app.route('/user/<user_id>', methods=['POST', 'GET', 'DELETE'])
 def user(user_id):
     user = model.User.query.filter(model.User.id == user_id).first_or_404()
-    updated = False
 
     if request.method == 'DELETE':
         model.db.session.delete(user)
@@ -207,4 +206,65 @@ def groups():
     pagination = query.paginate(page=int(page), per_page=int(qty))
 
     return render_template('groups.html', pagination=pagination)
+
+@login_required
+@admin_required
+@app.route('/group/new', methods=['GET', 'POST'])
+def new_group():
+    if request.method == 'GET':
+        users = model.User.query.order_by(model.User.username)
+        return render_template('group.html', users=users, new_group=True)
+    elif request.method == 'POST':
+        name = request.form.get('new_group_name')
+        desc = request.form.get('description')
+        members = model.User.query.filter(model.User.id.in_(request.form.getlist('members'))).all()
+
+        group = model.Group.query.filter_by(name=name).first()
+        if group:
+            flash(f'A group named {name} already exists!')
+            users = model.User.query.order_by(model.User.username)
+            return render_template('group.html', users=users, new_group=True)
+
+        group = model.Group()
+        group.name = name
+        group.description = desc
+        group.users = members
+
+        model.db.session.add(group)
+        model.db.session.commit()
+
+        flash(f'{name} successfully created!')
+        return redirect(url_for('groups'))
+
+@login_required
+@admin_required
+@app.route('/group/<group_id>', methods=['POST', 'GET', 'DELETE'])
+def group(group_id):
+    group = model.Group.query.filter(model.Group.id == group_id).first_or_404()
+    users = model.User.query.order_by(model.User.username).all()
+
+    if request.method == 'GET':
+        members = [m.id for m in group.users]
+
+        return render_template('group.html', group=group, users=users, members=members)
+    elif request.method == 'POST':
+        name = request.form.get('new_group_name')
+        desc = request.form.get('description')
+        members = model.User.query.filter(model.User.id.in_(request.form.getlist('members'))).all()
+
+        group.name = name
+        group.description = desc
+        group.users = members
+
+        model.db.session.add(group)
+        model.db.session.commit()
+
+        flash(f'Group updated!')
+        return render_template('group.html', group=group, users=users, members=[m.id for m in members])
+    elif request.method == 'DELETE':
+        model.db.session.delete(group)
+        model.db.session.commit()
+
+        flash(f'{group.name} successfully deleted.')
+        return "Deleted!"
 
