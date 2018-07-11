@@ -5,23 +5,23 @@ from phonos import model
 
 from collections import namedtuple
 
-def import_numbers(file, filetype):
+AVAYA_HEADERS = ["Extension", "Name", "Type", "Room", "Floor", "Building"]
+MOBILE_HEADERS = ["number", "name", "carrier", "devicetype", "country"]
+
+def import_numbers(file):
     if not file:
         raise FileNotFoundError("You need to provide a file to import!")
-    if not filetype:
-        raise TypeError("You must provide the type of the file to import!")
-    elif filetype not in ("Avaya", "Cisco", "mobile"):
-        raise TypeError("The filetype argument must be one of Avaya, Cisco or mobile.")
 
+    # Let's try to determine the file type
+    filetype = "unknown"
     reader = csv.DictReader(file)
-    if filetype == "Avaya":
+    fields = set(reader.fieldnames)
+    if len(fields) == len(AVAYA_HEADERS) and not fields.difference(AVAYA_HEADERS):
         return import_avaya_numbers(reader)
-    elif filetype == "Cisco":
-        return import_cisco_numbers(reader)
-    elif filetype == "mobile":
+    elif len(fields) == len(MOBILE_HEADERS) and not fields.difference(MOBILE_HEADERS):
         return import_mobile_numbers(reader)
-
-    raise RuntimeError("Something went wrong and I didn't recognize the type of file you are importing.")
+    else:
+        raise RuntimeError("Unknown import file type.")
 
 def import_avaya_numbers(file, country="US"):
     country_lookup = get_country_lookups()

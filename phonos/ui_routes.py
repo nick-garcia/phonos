@@ -107,13 +107,17 @@ def countries():
 def import_html():
     imported = 0
     if request.method == 'POST':
-        csvfile = request.files['csvfile']
-        filetype = request.form['filetype']
+        try:
+            csvfile = request.files['csvfile']
 
-        csvfile = [x.decode() for x in csvfile]
-        imported = util.import_numbers(csvfile, filetype)
+            csvfile = [x.decode(errors='ignore') for x in csvfile]
+            imported = util.import_numbers(csvfile)
+            flash(f'Successfully imported {imported} numbers!')
+        except RuntimeError as e:
+            flash(str(e))
+            return redirect(url_for('import_html'))
         
-    return render_template('import.html', imported=imported)
+    return render_template('import.html')
 
 @login_required
 @admin_required
