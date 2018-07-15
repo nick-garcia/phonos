@@ -14,7 +14,7 @@
         {% for phonenumber in pagination.items %}
         <tr>
             <td>
-                <a href="/person/{{ phonenumber.person.id }}">{{ phonenumber.person.firstname }} {{phonenumber.person.lastname }}</a>
+                <a href="/assignee/{{ phonenumber.assigned_to.id }}">{{ phonenumber.assigned_to.name }}</a>
             </td>
             <td>{{ phonenumber.number }}</td>
             <td>

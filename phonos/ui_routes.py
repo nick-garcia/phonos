@@ -22,7 +22,7 @@ def index_html():
     page = request.args.get('page', 1)
     qty = request.args.get('qty', 20)
 
-    query = model.PhoneNumber.query.join(model.Person, model.PhoneNumber.person).order_by(model.Person.firstname, model.Person.lastname)
+    query = model.PhoneNumber.query.join(model.PhoneAssignee, model.PhoneNumber.assigned_to).order_by(model.PhoneAssignee.name)
     pagination = query.paginate(page=int(page), per_page=int(qty))
 
     return render_template('index.html', pagination=pagination)
@@ -56,22 +56,22 @@ def logout():
     return redirect(url_for('login_html'))
 
 @login_required
-@app.route('/people.html')
-def people():
+@app.route('/assignees.html')
+def assignees():
     page = request.args.get('page', 1)
     qty = request.args.get('qty', 20)
 
-    query = model.Person.query.order_by(model.Person.firstname, model.Person.lastname)
+    query = model.PhoneAssignee.query.order_by(model.PhoneAssignee.name)
     pagination = query.paginate(page=int(page), per_page=int(qty))
 
-    return render_template('people.html', pagination=pagination)
+    return render_template('assignees.html', pagination=pagination)
 
 @login_required
-@app.route('/person/<person_id>')
-def person(person_id):
-    person = model.Person.query.filter(model.Person.id == person_id).first_or_404()
+@app.route('/assignee/<assignee_id>')
+def assignee(assignee_id):
+    assignee = model.PhoneAssignee.query.filter(model.PhoneAssignee.id == assignee_id).first_or_404()
 
-    return render_template('person.html', person=person)
+    return render_template('assignee.html', assignee=assignee)
 
 @login_required
 @app.route('/country/<country_id>', methods=['GET', 'POST'])

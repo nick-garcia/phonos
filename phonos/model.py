@@ -53,18 +53,15 @@ class PhoneNumber(db.Model):
     postal_code = db.Column(db.String(15))
     country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
     country = db.relationship("Country")
-    person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
-    person = db.relationship("Person", backref="numbers", lazy="joined")
+    assignee_id = db.Column(db.Integer, db.ForeignKey('phone_assignee.id'))
+    assigned_to = db.relationship("PhoneAssignee", backref="numbers", lazy="joined")
     extra = db.Column(db.JSON)  # Extra information will change based on type.
+    needs_review = db.Column(db.Boolean, index=True, default=False, nullable=False)
 
 
-class Person(db.Model):
+class PhoneAssignee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    firstname = db.Column(db.String(50), nullable=False)
-    lastname = db.Column(db.String(50))
-
-db.Index('person_firstname_lastname_idx', Person.firstname, Person.lastname)
-
+    name = db.Column(db.String(50), nullable=False, index=True)
 
 class Country(db.Model):
     id = db.Column(db.Integer, primary_key=True)

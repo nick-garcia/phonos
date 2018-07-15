@@ -1,13 +1,13 @@
-{% set current_page = "people" %}
+{% set current_page = "assignees" %}
 {% extends 'base.html' %}
 {% block body %}
     <div class="col-3">
         <div class="card">
             <div class="card-body">
-                <h3 class="card-title">{{ person.firstname }} {{ person.lastname }}</h3>
+                <h3 class="card-title">{{ assignee.name }}</h3>
                 <p class="card-text">
                     <div class="font-weight-bold">Phone Numbers</div>
-                    {% for number in person.numbers %}
+                    {% for number in assignee.numbers %}
                         <div class="dropdown m-1">
                             <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="number{{ loop.index }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 {{ number.number }}

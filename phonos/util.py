@@ -28,11 +28,10 @@ def import_avaya_numbers(file, country="US"):
 
     records = 0
     for row in file:
-        firstname, lastname = row['Name'].split()
-        person = model.Person.query.filter_by(firstname=firstname, lastname=lastname).first()
-        if not person:
-            person = model.Person(firstname=firstname, lastname=lastname)
+        needs_review = False
+        name = row['Name']
 
+        assignee = model.PhoneAssignee(name=name)
         extra = {
             "phone_type" : row["Type"],
             "room" : row["Room"],
@@ -40,12 +39,17 @@ def import_avaya_numbers(file, country="US"):
             "building" : row["Building"]
         }
 
+        query = model.PhoneAssignee.query.filter_by(name=name)
+        if query.count() > 0:
+            needs_review = True
+
         number = model.PhoneNumber(
             number=row["Extension"],
             type="Avaya",
             country=country_lookup.by_code[country],
-            person = person,
-            extra = extra
+            assigned_to = assignee,
+            extra = extra,
+            needs_review = needs_review
         )
 
         model.db.session.add(number)
@@ -62,10 +66,10 @@ def import_mobile_numbers(file):
 
     records = 0
     for row in file:
-        lastname, firstname = row['name'].split(', ')
-        person = model.Person.query.filter_by(firstname=firstname, lastname=lastname).first()
-        if not person:
-            person = model.Person(firstname=firstname, lastname=lastname)
+        needs_review = False
+        name = row['name']
+
+        assignee = model.PhoneAssignee(name=name)
 
         if len(row["country"]) == 2:
             country = country_lookup.by_code[row["country"]]
@@ -80,12 +84,17 @@ def import_mobile_numbers(file):
             'device_type' : row['devicetype']
         }
 
+        query = model.PhoneAssignee.query.filter_by(name=name)
+        if query.count() > 0:
+            needs_review = True
+
         number = model.PhoneNumber(
             number=phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164),
             type="mobile",
             country=country,
-            person=person,
-            extra=extra
+            assigned_to=assignee,
+            extra=extra,
+            needs_review = needs_review
         )
 
         model.db.session.add(number)
