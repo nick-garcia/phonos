@@ -13,7 +13,6 @@ def import_numbers(file):
         raise FileNotFoundError("You need to provide a file to import!")
 
     # Let's try to determine the file type
-    filetype = "unknown"
     reader = csv.DictReader(file)
     fields = set(reader.fieldnames)
     if len(fields) == len(AVAYA_HEADERS) and not fields.difference(AVAYA_HEADERS):
