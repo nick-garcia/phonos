@@ -1,24 +1,19 @@
-{% set current_page = "index" %}
+{% set current_page = "review" %}
 {% extends 'base.html' %}
 {% block body %}
-    <div class="row">
-        <div class="col">
-            <h2>Phone Numbers</h2>
-        </div>
-        <div class="col text-right mt-3">
-            {% if reviewable %}
-            <a href="/review.html" class="badge badge-danger">There are {{ reviewable }} conflicts that need to be reviewed.</a>
-            {% endif %}
-        </div>
-    </div>
+    <h2>Conflicting Numbers</h2>
     <table class="table table-striped table-hover table-bordered table-sm">
         <thead class="table-primary">
-            <th>Name</th>
-            <th>Number</th>
-            <th>Type</th>
-            <th>Carrier</th>
-            <th>Address</th>
-            <th>Country</th>
+            <tr>
+                <th>Name</th>
+                <th>Number</th>
+                <th>Type</th>
+                <th>Carrier</th>
+                <th>Address</th>
+                <th>Country</th>
+                <th>Match</th>
+                <th>Action</th>
+            </tr>
         </thead>
         {% for phonenumber in pagination.items %}
         <tr>

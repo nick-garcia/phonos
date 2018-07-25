@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, session, abort
 from flask_login import current_user, login_user, logout_user, login_required
-from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import aliased
+from werkzeug.security import generate_password_hash
 
 from phonos import app, util, model
 
@@ -22,10 +23,11 @@ def index_html():
     page = request.args.get('page', 1)
     qty = request.args.get('qty', 20)
 
+    review_query = model.PhoneNumber.query.filter(model.PhoneNumber.needs_review == True)
     query = model.PhoneNumber.query.join(model.PhoneAssignee, model.PhoneNumber.assigned_to).order_by(model.PhoneAssignee.name)
     pagination = query.paginate(page=int(page), per_page=int(qty))
 
-    return render_template('index.html', pagination=pagination)
+    return render_template('index.html', pagination=pagination, reviewable=review_query.count())
 
 @app.route('/login.html')
 def login_html():
@@ -272,3 +274,20 @@ def group(group_id):
         flash(f'{group.name} successfully deleted.')
         return "Deleted!"
 
+@login_required
+@admin_required
+@app.route('/review.html')
+def review_html():
+    page = request.args.get('page', 1)
+    qty = request.args.get('qty', 20)
+    Conflict = aliased(model.PhoneAssignee)
+    ConflictNumber = aliased(model.PhoneNumber)
+
+    query = model.PhoneNumber.query.filter(model.PhoneNumber.needs_review == True).join(model.PhoneAssignee)
+    query = query.join(Conflict, Conflict.name == model.PhoneAssignee.name).filter(Conflict.id != model.PhoneAssignee.id)
+    query = query.join(ConflictNumber, Conflict.id == ConflictNumber.assignee_id)
+    query = query.add_columns(ConflictNumber.number)
+
+    pagination = query.paginate(page=int(page), per_page=int(qty))
+
+    return render_template('review.html', pagination=pagination)
