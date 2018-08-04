@@ -286,8 +286,45 @@ def review_html():
     query = model.PhoneNumber.query.filter(model.PhoneNumber.needs_review == True).join(model.PhoneAssignee)
     query = query.join(Conflict, Conflict.name == model.PhoneAssignee.name).filter(Conflict.id != model.PhoneAssignee.id)
     query = query.join(ConflictNumber, Conflict.id == ConflictNumber.assignee_id)
-    query = query.add_columns(ConflictNumber.number)
+    query = query.add_entity(ConflictNumber)
 
     pagination = query.paginate(page=int(page), per_page=int(qty))
 
     return render_template('review.html', pagination=pagination)
+
+@login_required
+@admin_required
+@app.route('/reviews/process', methods=['POST'])
+def reviews_process():
+    actions = request.form.getlist('action')
+    for action in actions:
+        if action.startswith('delete'):
+            act, id = action.split('|')
+            conflict = model.PhoneNumber.query.filter_by(id=id).first()
+            model.db.session.delete(conflict)
+        elif action.startswith('merge'):
+            act, conflict_id, merge_id = action.split('|')
+            conflict = model.PhoneNumber.query.filter_by(id=conflict_id).first()
+            original = model.PhoneNumber.query.filter_by(id=merge_id).first()
+
+            model.db.session.delete(conflict.assigned_to)
+            conflict.assigned_to = original.assigned_to
+            conflict.needs_review = False
+            model.db.session.add(conflict)
+        elif action.startswith('replace'):
+            act, conflict_id, merge_id = action.split('|')
+            conflict = model.PhoneNumber.query.filter_by(id=conflict_id).first()
+            original = model.PhoneNumber.query.filter_by(id=merge_id).first()
+
+            model.db.session.delete(original)
+            conflict.needs_review = False
+            model.db.session.add(conflict)
+        elif action.startswith('save'):
+            act, conflict_id = action.split('|')
+            conflict = model.PhoneNumber.query.filter_by(id=conflict_id).first()
+
+            conflict.needs_review = False
+            model.db.session.add(conflict)
+
+    model.db.session.commit()
+    return redirect(url_for('review_html'))

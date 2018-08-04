@@ -2,45 +2,67 @@
 {% extends 'base.html' %}
 {% block body %}
     <h2>Conflicting Numbers</h2>
-    <table class="table table-striped table-hover table-bordered table-sm">
-        <thead class="table-primary">
+    <p>Select an action for each row to resolve each conflict, then click the Process Conflicts button below.</p>
+    <form method="POST" action="/reviews/process">
+        <table class="table table-striped table-hover table-bordered table-sm">
+            <thead class="table-primary">
+                <tr>
+                    <th>Name</th>
+                    <th>Number</th>
+                    <th>Type</th>
+                    <th>Carrier</th>
+                    <th>Address</th>
+                    <th>Match</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            {% for conflict, original in pagination.items %}
             <tr>
-                <th>Name</th>
-                <th>Number</th>
-                <th>Type</th>
-                <th>Carrier</th>
-                <th>Address</th>
-                <th>Country</th>
-                <th>Match</th>
-                <th>Action</th>
+                <td>
+                    <a href="/assignee/{{ conflict.assigned_to.id }}">{{ conflict.assigned_to.name }}</a>
+                </td>
+                <td>{{ conflict.number }}</td>
+                <td>
+                    {{ conflict.type }}
+                    {% if conflict.type == 'mobile' %}
+                      <br/>{{ conflict.extra.device_type }}
+                    {% elif conflict.type == 'Avaya' %}
+                      <br/>{{ conflict.extra.phone_type }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if conflict.type == 'mobile' %}
+                        {{ conflict.extra.carrier }}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    {{ conflict.street_address }}<br/>
+                    {{ conflict.country.name }}
+                </td>
+                <td>
+                    {{ original.assigned_to.name }}<br/>
+                    {{ original.number }}<br/>
+                    {{ original.street_address }}<br/>
+                    {{ original.country.name }}
+                </td>
+                <td>
+                    <select name="action">
+                        <option value="nothing|{{ conflict.id }}">Do Nothing</option>
+                        <option value="merge|{{ conflict.id }}|{{ original.id }}">Merge</option>
+                        <option value="delete|{{ conflict.id }}">Delete Conflict</option>
+                        <option value="replace|{{ conflict.id }}|{{ original.id }}">Replace</option>
+                        <option value="save|{{ conflict.id }}">Save as New</option>
+                    </select>
+                </td>
             </tr>
-        </thead>
-        {% for phonenumber in pagination.items %}
-        <tr>
-            <td>
-                <a href="/assignee/{{ phonenumber.assigned_to.id }}">{{ phonenumber.assigned_to.name }}</a>
-            </td>
-            <td>{{ phonenumber.number }}</td>
-            <td>
-                {{ phonenumber.type }}
-                {% if phonenumber.type == 'mobile' %}
-                  ({{ phonenumber.extra.device_type }})
-                {% elif phonenumber.type == 'Avaya' %}
-                  ({{ phonenumber.extra.phone_type }})
-                {% endif %}
-            </td>
-            <td>
-                {% if phonenumber.type == 'mobile' %}
-                    {{ phonenumber.extra.carrier }}
-                {% else %}
-                    N/A
-                {% endif %}
-            </td>
-            <td>{{ phonenumber.street_address }}</td>
-            <td>{{ phonenumber.country.name }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+            {% endfor %}
+        </table>
+        <div class="text-right">
+            <button type="submit" class="btn btn-primary">Process Conflicts</button>
+        </div>
+    </form>
     <div class="container pt-3">
         <nav aria-label="Pagination">
             <ul class="pagination justify-content-center">
