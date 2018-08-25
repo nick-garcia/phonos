@@ -4,6 +4,7 @@ from phonos import app, login
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import csv
+import datetime
 import enum
 
 db = SQLAlchemy(app)
@@ -44,6 +45,8 @@ class PhoneStatus(enum.Enum):
 class PhoneNumber(db.Model):
     __tablename__ = "phone_number"
     id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
+    updated = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
     number = db.Column(db.String(20), nullable=False)
     type = db.Column(db.String(10), nullable=False)  # (Avaya, Cisco, mobile)
     status = db.Column(db.Enum(PhoneStatus))

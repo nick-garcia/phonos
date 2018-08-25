@@ -35,7 +35,7 @@ def login_html():
 
 @app.route('/login', methods=['POST'])
 def login():
-    if current_user.is_authenticated:
+    if current_user.is_authenticated():
         return redirect(url_for('index_html'))
 
     username = request.form['phonos_username']
