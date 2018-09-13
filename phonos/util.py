@@ -1,4 +1,5 @@
 import csv
+import datetime
 import phonenumbers
 
 from phonos import model
@@ -24,6 +25,7 @@ def import_numbers(file):
 
 def import_avaya_numbers(file, country="US"):
     country_lookup = get_country_lookups()
+    now = datetime.datetime.now()
 
     records = 0
     for row in file:
@@ -48,7 +50,9 @@ def import_avaya_numbers(file, country="US"):
             country=country_lookup.by_code[country],
             assigned_to = assignee,
             extra = extra,
-            needs_review = needs_review
+            needs_review = needs_review,
+            created=now,
+            updated=now
         )
 
         model.db.session.add(number)
@@ -62,6 +66,7 @@ def import_cisco_numbers(file):
 
 def import_mobile_numbers(file):
     country_lookup = get_country_lookups()
+    now = datetime.datetime.now()
 
     records = 0
     for row in file:
@@ -93,7 +98,9 @@ def import_mobile_numbers(file):
             country=country,
             assigned_to=assignee,
             extra=extra,
-            needs_review = needs_review
+            needs_review = needs_review,
+            created=now,
+            updated=now
         )
 
         model.db.session.add(number)

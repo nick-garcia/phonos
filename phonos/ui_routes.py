@@ -1,3 +1,5 @@
+import datetime
+
 from flask import render_template, request, redirect, url_for, flash, session, abort
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.orm import aliased
@@ -297,6 +299,8 @@ def review_html():
 @app.route('/reviews/process', methods=['POST'])
 def reviews_process():
     actions = request.form.getlist('action')
+    now = datetime.datetime.now()
+
     for action in actions:
         if action.startswith('delete'):
             act, id = action.split('|')
@@ -310,6 +314,7 @@ def reviews_process():
             model.db.session.delete(conflict.assigned_to)
             conflict.assigned_to = original.assigned_to
             conflict.needs_review = False
+            conflict.updated = now
             model.db.session.add(conflict)
         elif action.startswith('replace'):
             act, conflict_id, merge_id = action.split('|')
@@ -318,12 +323,14 @@ def reviews_process():
 
             model.db.session.delete(original)
             conflict.needs_review = False
+            conflict.updated = now
             model.db.session.add(conflict)
         elif action.startswith('save'):
             act, conflict_id = action.split('|')
             conflict = model.PhoneNumber.query.filter_by(id=conflict_id).first()
 
             conflict.needs_review = False
+            conflict.updated = now
             model.db.session.add(conflict)
 
     model.db.session.commit()
