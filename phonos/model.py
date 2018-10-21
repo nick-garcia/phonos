@@ -91,4 +91,14 @@ class Group(db.Model):
     name = db.Column(db.String(50), nullable=False, unique=True)
     description = db.Column(db.Text, nullable=False, default='')
 
+class SiteSettingType(enum.Enum):
+    string = "String"
+    boolean = "Boolean"
+    integer = "Integer"
+
+class SiteSettings(db.Model):
+    setting = db.Column(db.String(25), nullable=False, primary_key=True)
+    type = db.Column(db.Enum(SiteSettingType), nullable=False)
+    value = db.Column(db.String(100), nullable=False)
+
 db.Index('user_username_password_idx', User.username, User.password)
