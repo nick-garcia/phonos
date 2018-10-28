@@ -86,19 +86,14 @@ class User(UserMixin, db.Model):
     def valid_password(self, password):
         return check_password_hash(self.password, password)
 
+db.Index('user_username_password_idx', User.username, User.password)
+
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
     description = db.Column(db.Text, nullable=False, default='')
 
-class SiteSettingType(enum.Enum):
-    string = "String"
-    boolean = "Boolean"
-    integer = "Integer"
+class Settings(db.Model):
+    settings_for = db.Column(db.String(30), primary_key=True)
+    settings = db.Column(db.JSON)
 
-class SiteSettings(db.Model):
-    setting = db.Column(db.String(25), nullable=False, primary_key=True)
-    type = db.Column(db.Enum(SiteSettingType), nullable=False)
-    value = db.Column(db.String(100), nullable=False)
-
-db.Index('user_username_password_idx', User.username, User.password)

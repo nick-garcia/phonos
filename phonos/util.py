@@ -123,37 +123,18 @@ def get_country_lookups():
     return CountryLookup(by_code=by_code, by_name=by_name, code_by_name=code_by_name)
 
 def get_site_settings():
-    """ Returns the saved settings values as a dictionary. """
-    site_settings = {}
-    for setting in model.SiteSettings.query:
-        if setting.type == model.SiteSettingType.boolean:
-            site_settings[setting.setting] = bool(int(setting.value))
-        elif setting.type == model.SiteSettingType.integer:
-            site_settings[setting.setting] = int(setting.value)
-        else:
-            site_settings[setting.setting] = setting.value
+    settings_obj = model.Settings.query.filter_by(settings_for="site").first()
+    return settings_obj.settings if settings_obj else {}
 
-    return site_settings
+def save_site_settings(new_settings):
+    print("Getting settings object...")
+    settings_obj = model.Settings.query.filter_by(settings_for="site").first()
+    if not settings_obj:
+        print("Settings object was empty, making new settings object.")
+        settings_obj = model.Settings()
+        settings_obj.settings_for = "site"
 
-def save_site_settings(settings):
-    """ Take a settings dictionary as returned by get_site_settings and save it to the database. """
-    for key, value in settings.items():
-        setting = model.SiteSettings.query.filter_by(setting=key).first()
-        if not setting:
-            setting = model.SiteSettings()
-            setting.setting = key
-
-        setting.value = str(value)
-        if isinstance(value, str):
-            setting.type = "string"
-        elif isinstance(value, bool):
-            setting.type = "boolean"
-            setting.value = "1" if value else "0"
-        elif isinstance(value, int):
-            setting.type = "integer"
-        else:
-            raise TypeError(f"Unable to save settings.  Setting {key} has invalid type {type(value)}.")
-
-        model.db.session.add(setting)
+    settings_obj.settings = new_settings
+    model.db.session.add(settings_obj)
 
     model.db.session.commit()
