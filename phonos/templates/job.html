@@ -1,0 +1,103 @@
+{% set current_page = "schedule" %}
+{% extends 'base.html' %}
+{% block body %}
+    <h3>{% if new_job %}Schedule New Import{% else %}{{ job.description }}{% endif %}</h3>
+    {% if new_job %}
+        <form method="POST" action="/job/new" id='job_form' autocomplete="off">
+    {% else %}
+        <form method="POST" action="/job/{{ job.id }}" autocomplete="off">
+    {% endif %}
+       <div class="form-group row">
+           <label class="col-2" for="job">Name</label>
+           <div class="col-5">
+               <input type="text" id="job" class="form-control" placeholder="My Import" name="new_job_name" value="{% if job %}{{ job.name }}{% endif %}">
+           </div>
+       </div>
+        <div class="row pb-3">
+            <label class="col-2" for="description">Description</label>
+            <div class="col-5">
+                <textarea id="description" class='form-control' name='description' rows="3">{% if job %}{{ job.description }}{% endif %}</textarea>
+            </div>
+        </div>
+        <div class="row pb-3">
+            <label class="col-2" for="schedule">Schedule</label>
+            <div class="col-5">
+               <input
+                   type="text"
+                   id="schedule"
+                   class="form-control"
+                   placeholder="0 2 * * *"
+                   name="new_schedule"
+                   value="{% if job %}{{ job.schedule }}{% endif %}"
+                   data-toggle="tooltip"
+                   data-placement="top"
+                   title="Schedule definitions use cron style scheduling"
+                   onkeyup="schedule_parse_cron(this.value);"
+               />
+                <div class="row">
+                    <div class="col-auto">
+                        <strong id="readable_schedule">{{ readable_schedule }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row pb-3">
+            <label class="col-2" for="hostname">Hostname</label>
+            <div class="col-5">
+                <input
+                    type="text"
+                    id="hostname"
+                    name="new_hostname"
+                    class="form-control"
+                    placeholder="https://www.server.com"
+                    value="{% if job %}{{ job.hostname }}{% endif %}"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    title="For FTP use ftp://www.server.com"
+                />
+            </div>
+        </div>
+        <div class="row pb-3">
+            <label class="col-2" for="location">Path</label>
+            <div class="col-5">
+                <input
+                    type="text"
+                    id="location"
+                    name="new_location"
+                    class="form-control"
+                    placeholder="/path/to/file.csv"
+                    value="{% if job %}{{ job.location }}{% endif %}"
+                />
+            </div>
+        </div>
+        <div class="row pb-3">
+            <label class="col-2" for="username">Username</label>
+            <div class="col-5">
+                <input type="text" id="username" name="new_username" class="form-control" autocomplete="nope">
+            </div>
+        </div>
+        <div class="row pb-3">
+            <label class="col-2" for="password">Password</label>
+            <div class="col-5">
+                <input type="password" id="password" name="new_password" class="form-control" autocomplete="new-password">
+            </div>
+        </div>
+        <div class="row pt-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+            {% if not new_job %}
+                <div class="col align-right">
+                    <button type="button" class="btn btn-danger" onClick="confirm_delete_group({{ job.id }})">Delete</button>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-warning border border-warning mt-2" role="alert">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+{% endblock %}

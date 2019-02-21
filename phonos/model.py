@@ -97,3 +97,20 @@ class Settings(db.Model):
     settings_for = db.Column(db.String(30), primary_key=True)
     settings = db.Column(db.JSON)
 
+class Job(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.String(25), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(200), nullable=False)
+    schedule = db.Column(db.String(50), nullable=False)
+    hostname = db.Column(db.String(50), nullable=False)
+    path = db.Column(db.String(200), nullable=False)
+    username = db.Column(db.String(50))
+    password = db.Column(db.String(50))
+
+class JobLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    job = db.Column(db.Integer, db.ForeignKey('job.id'))
+    execution_time = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
+    success = db.Column(db.Boolean)
+    reason = db.Column(db.Text)

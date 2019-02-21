@@ -1,6 +1,7 @@
 import datetime
 
-from flask import render_template, request, redirect, url_for, flash, session, abort
+from cron_descriptor import get_description, Exception
+from flask import render_template, request, redirect, url_for, flash, session, abort, jsonify
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.orm import aliased
 from werkzeug.security import generate_password_hash
@@ -37,7 +38,7 @@ def login_html():
 
 @app.route('/login', methods=['POST'])
 def login():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated:
         return redirect(url_for('index_html'))
 
     username = request.form['phonos_username']
@@ -335,3 +336,53 @@ def reviews_process():
 
     model.db.session.commit()
     return redirect(url_for('review_html'))
+
+@login_required
+@admin_required
+@app.route('/schedule.html')
+def schedule_html():
+
+    return render_template('schedule.html')
+
+@login_required
+@admin_required
+@app.route('/job/new', methods=['GET', 'POST'])
+def new_job():
+    if request.method == 'GET':
+        #users = model.User.query.order_by(model.User.username)
+        return render_template('job.html', new_job=True)
+    # elif request.method == 'POST':
+    #     name = request.form.get('new_group_name')
+    #     desc = request.form.get('description')
+    #     members = model.User.query.filter(model.User.id.in_(request.form.getlist('members'))).all()
+    #
+    #     group = model.Group.query.filter_by(name=name).first()
+    #     if group:
+    #         flash(f'A group named {name} already exists!')
+    #         users = model.User.query.order_by(model.User.username)
+    #         return render_template('group.html', users=users, new_group=True)
+    #
+    #     group = model.Group()
+    #     group.name = name
+    #     group.description = desc
+    #     group.users = members
+    #
+    #     model.db.session.add(group)
+    #     model.db.session.commit()
+    #
+    #     flash(f'{name} successfully created!')
+    #     return redirect(url_for('groups'))
+
+
+@app.route('/parse_cron_schedule', methods=['POST'])
+def parse_cron_schedule():
+    readable = ''
+
+    sched = request.form.get('cron_schedule')
+    if sched:
+        try:
+            readable = get_description(sched)
+        except Exception.FormatException as err:
+            readable = str(err)
+
+    return jsonify({'readable_schedule': readable})

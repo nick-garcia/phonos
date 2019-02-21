@@ -1,6 +1,7 @@
 import csv
 import datetime
 import phonenumbers
+import tzlocal
 
 from phonos import model
 
@@ -127,10 +128,8 @@ def get_site_settings():
     return settings_obj.settings if settings_obj else {}
 
 def save_site_settings(new_settings):
-    print("Getting settings object...")
     settings_obj = model.Settings.query.filter_by(settings_for="site").first()
     if not settings_obj:
-        print("Settings object was empty, making new settings object.")
         settings_obj = model.Settings()
         settings_obj.settings_for = "site"
 
@@ -138,3 +137,11 @@ def save_site_settings(new_settings):
     model.db.session.add(settings_obj)
 
     model.db.session.commit()
+
+def get_timezone(for_date=None):
+    if not for_date:
+        for_date = datetime.datetime.now()
+
+    localzone = tzlocal.get_localzone()
+
+    return localzone.tzname(for_date)

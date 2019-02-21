@@ -1,0 +1,12 @@
+{% set current_page = "schedule" %}
+{% extends 'base.html' %}
+{% block body %}
+    <div class="row">
+        <div class="col-10">
+            <h2>Scheduled Imports</h2>
+        </div>
+        <div class="col-2 text-right">
+            <button type="button" class="btn btn-primary btn-sm mt-2" onClick="window.location.href = '/job/new';">Schedule New Job</button>
+        </div>
+    </div>
+{% endblock %}
